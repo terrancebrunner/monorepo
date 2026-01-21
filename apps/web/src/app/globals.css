@@ -1,0 +1,4 @@
+@import "@repo/ui/styles.css";
+
+@source "../**/*.tsx";
+@source "../../../packages/ui/src/**/*.tsx";
