@@ -1,6 +1,11 @@
 {
   "name": "monorepo",
   "private": true,
+  "author": {
+    "name": "Terrance E. Brunner",
+    "email": "terrancebrunner@gmail.com",
+    "url": "https://terrancebrunner.com"
+  },
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
