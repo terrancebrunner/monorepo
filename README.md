@@ -330,52 +330,89 @@ Tailwind v4 moves config from JavaScript to CSS:
 - `@import "tailwindcss";` — single import
 - `@theme { }` — design tokens in CSS
 - `@source` — content scanning directives
+- `@custom-variant` — custom variant definitions
 
 ## Theme Definition
 
-`packages/ui/src/styles.css` — the design system source:
+`packages/ui/src/styles.css` — the design system source with shadcn-style tokens:
 
 ```css
 @import "tailwindcss";
 
-@source "./components/**/*.tsx";
+@source "./primitives/**/*.tsx";
+@source "./blocks/**/*.tsx";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Colors */
-  --color-brand: #6366f1;
-  --color-brand-hover: #4f46e5;
-  --color-brand-active: #4338ca;
+  /* Fonts */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 
-  --color-surface: #fafafa;
-  --color-surface-raised: #ffffff;
-  --color-surface-sunken: #f4f4f5;
-
-  --color-border: #e4e4e7;
-  --color-text: #18181b;
-  --color-text-muted: #71717a;
-  --color-text-inverted: #ffffff;
-
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-
-  /* Typography */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Semantic Colors (light mode defaults) */
+  --background: var(--color-white);
+  --foreground: var(--color-neutral-950);
+  --card: var(--color-white);
+  --card-foreground: var(--color-neutral-950);
+  --primary: var(--color-neutral-900);
+  --primary-foreground: var(--color-neutral-50);
+  --secondary: var(--color-neutral-100);
+  --secondary-foreground: var(--color-neutral-900);
+  --muted: var(--color-neutral-100);
+  --muted-foreground: var(--color-neutral-500);
+  --accent: var(--color-neutral-100);
+  --accent-foreground: var(--color-neutral-900);
+  --destructive: var(--color-red-600);
+  --destructive-foreground: var(--color-white);
+  --border: var(--color-neutral-200);
+  --input: var(--color-neutral-200);
+  --ring: var(--color-neutral-400);
 
   /* Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
+  --radius: 0.625rem;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-
-  /* Transitions */
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
 }
+
+/* Dark mode overrides */
+.dark {
+  --background: var(--color-neutral-950);
+  --foreground: var(--color-neutral-50);
+  --card: var(--color-neutral-900);
+  --card-foreground: var(--color-neutral-50);
+  /* ... all tokens have dark variants */
+}
+```
+
+### Design Token Reference
+
+| Token | Light Mode | Dark Mode | Usage |
+|-------|------------|-----------|-------|
+| `background` / `foreground` | white / neutral-950 | neutral-950 / neutral-50 | Page bg and text |
+| `card` / `card-foreground` | white / neutral-950 | neutral-900 / neutral-50 | Card surfaces |
+| `primary` / `primary-foreground` | neutral-900 / neutral-50 | neutral-200 / neutral-900 | Primary actions |
+| `secondary` / `secondary-foreground` | neutral-100 / neutral-900 | neutral-800 / neutral-50 | Secondary actions |
+| `muted` / `muted-foreground` | neutral-100 / neutral-500 | neutral-800 / neutral-400 | Subtle elements |
+| `destructive` / `destructive-foreground` | red-600 / white | red-400 / neutral-50 | Destructive actions |
+| `border` | neutral-200 | neutral-800 | Border color |
+| `input` | neutral-200 | neutral-800 | Input borders |
+| `ring` | neutral-400 | neutral-300 | Focus rings |
+
+### Dark Mode
+
+Class-based dark mode via `@custom-variant dark`. Toggle by adding `.dark` to `<html>`:
+
+```js
+// Enable dark mode
+document.documentElement.classList.add('dark');
+
+// Disable dark mode
+document.documentElement.classList.remove('dark');
+
+// Toggle dark mode
+document.documentElement.classList.toggle('dark');
 ```
 
 ## Integration Paths
@@ -411,51 +448,21 @@ Each app imports the UI styles and declares content sources:
 ```css
 /* apps/web/src/app/globals.css */
 @import "@repo/ui/styles.css";
-@import "tailwindcss";
 
 @source "../**/*.tsx";
-@source "../../../packages/ui/src/**/*.tsx";
+@source "../../../../packages/ui/src/**/*.tsx";
 ```
+
+**Important:** `@source` paths are relative to the CSS file location:
+- cdn (`apps/cdn/src/`): `../../../packages/ui/src/**/*.tsx`
+- docs/web (`apps/*/src/app/`): `../../../../packages/ui/src/**/*.tsx`
 
 ### Why Two `@source` Directives?
 
 | Directive | Scans | Purpose |
 |-----------|-------|---------|
 | `@source "../**/*.tsx"` | App components | App-specific classes |
-| `@source "../../../packages/ui/src/**/*.tsx"` | UI package | Shared component classes |
-
-## When You'd Still Use a Config File
-
-Tailwind v4 supports `tailwind.config.ts` for:
-
-- Plugins (e.g., `@tailwindcss/typography`)
-- Complex custom utilities
-- Programmatic theme generation
-
-```ts
-// packages/ui/tailwind.config.ts
-import type { Config } from "tailwindcss";
-import typography from "@tailwindcss/typography";
-
-export default {
-  plugins: [typography],
-} satisfies Config;
-```
-
-```css
-@import "tailwindcss";
-@config "./tailwind.config.ts";
-```
-
-## Tailwind Summary
-
-| Aspect | Implementation |
-|--------|----------------|
-| Next.js integration | `@tailwindcss/postcss` via `postcss.config.mjs` |
-| Vite integration | `@tailwindcss/vite` plugin (no PostCSS needed) |
-| Theme/config | CSS via `@theme { }` |
-| Content scanning | `@source` directives in CSS |
-| Plugins | Optional `tailwind.config.ts` + `@config` |
+| `@source "../../../../packages/ui/src/**/*.tsx"` | UI package | Shared component classes |
 
 ---
 
@@ -481,14 +488,22 @@ catalog:
   typescript: "^5.7.0"
   "@types/node": "^22.10.0"
 
-  # ESLint
-  eslint: "^9.17.0"
-  "@eslint/js": "^9.17.0"
-  # ... etc
-
   # Frameworks
   next: "^15.1.0"
   vite: "^6.0.0"
+
+  # UI utilities
+  clsx: "^2.1.1"
+  tailwind-merge: "^2.6.0"
+  class-variance-authority: "^0.7.0"
+
+  # Icons
+  lucide-react: "^0.487.0"
+
+  # Radix UI
+  "@radix-ui/react-avatar": "^1.1.0"
+  "@radix-ui/react-label": "^2.1.0"
+  "@radix-ui/react-slot": "^1.1.0"
 ```
 
 Apps reference with `catalog:`:
@@ -524,21 +539,10 @@ Shared dev tooling in root `package.json`:
     "prettier": "^3.4.0",
     "typescript": "catalog:",
     "eslint": "catalog:",
-    "tailwindcss": "catalog:",
-    "@tailwindcss/postcss": "catalog:",
-    "@tailwindcss/vite": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@types/node": "catalog:"
+    "tailwindcss": "catalog:"
   }
 }
 ```
-
-**Why hoist these:**
-
-- Dev tools used everywhere
-- Single install, pnpm dedupes
-- Consistent versions guaranteed
 
 ### Kept in Apps
 
@@ -549,31 +553,6 @@ Runtime dependencies stay local:
 | `react`, `react-dom` | Each app | Runtime dep — apps own their runtime |
 | `next` | apps/web, apps/docs | Framework — tightly coupled to app |
 | `vite` | apps/cdn | Build tool — specific to this app |
-| `@vitejs/plugin-react` | apps/cdn | Vite-specific plugin |
-
-**Why not hoist React:**
-
-- React is a runtime dependency, not a dev tool
-- Root `package.json` shouldn't have runtime deps
-- Apps should explicitly declare their requirements
-
-### packages/ui Dependencies
-
-```json
-{
-  "dependencies": {
-    "clsx": "catalog:",
-    "tailwind-merge": "catalog:"
-  },
-  "peerDependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:"
-  }
-}
-```
-
-- `clsx` + `tailwind-merge` — actual deps (used by components)
-- `react` — peer dep (provided by consuming apps)
 
 ---
 
@@ -608,61 +587,104 @@ Apps compile the source themselves:
 | Tree-shaking | Apps bundle only what they import |
 | Simple debugging | No sourcemap indirection |
 
-### Trade-offs
-
-| Downside | Mitigation |
-|----------|------------|
-| Each app compiles UI | Acceptable for small teams |
-| Can't publish to npm | Add build step when needed |
-| Bundler differences possible | Rare in practice |
-
-## Component Structure
+## Folder Structure
 
 ```
 packages/ui/src/
-├── index.ts           # Exports
-├── styles.css         # Tailwind theme
+├── primitives/     # Base components
+│   ├── avatar.tsx
+│   ├── badge.tsx
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── input.tsx
+│   ├── label.tsx
+│   └── index.ts
+├── blocks/         # Composed components
+│   ├── profile-card.tsx
+│   └── index.ts
 ├── lib/
-│   └── utils.ts       # cn() helper
-└── components/
-    ├── button.tsx
-    └── card.tsx
+│   └── utils.ts    # cn() helper
+├── styles.css      # Design tokens
+└── index.ts        # Barrel exports
 ```
 
-### Example Component
+## Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `clsx` + `tailwind-merge` | `cn()` utility for class merging |
+| `class-variance-authority` | CVA for variant-based component styling |
+| `lucide-react` | Icon library |
+| `@radix-ui/react-avatar` | Accessible avatar primitive |
+| `@radix-ui/react-label` | Accessible label primitive |
+| `@radix-ui/react-slot` | Polymorphic `asChild` pattern |
+
+## Components
+
+### Primitives
+
+| Component | Variants | Features |
+|-----------|----------|----------|
+| `Button` | default, secondary, outline, ghost, destructive, link | Sizes: default, sm, lg, icon. Supports `asChild` |
+| `Card` | — | CardHeader, CardTitle, CardDescription, CardContent, CardFooter |
+| `Avatar` | — | AvatarImage, AvatarFallback (Radix-based) |
+| `Badge` | default, secondary, outline, destructive | — |
+| `Input` | — | Styled input with focus states |
+| `Label` | — | Radix-based for accessibility |
+
+### Blocks
+
+| Component | Description |
+|-----------|-------------|
+| `ProfileCard` | Composed profile card using Avatar, Badge, Button, Card |
+
+### Example: Button with CVA
 
 ```tsx
-// packages/ui/src/components/button.tsx
-import { forwardRef, type ButtonHTMLAttributes } from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { forwardRef } from "react";
 import { cn } from "../lib/utils";
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "secondary" | "outline" | "ghost" | "destructive";
-  size?: "sm" | "md" | "lg";
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        outline: "border border-input bg-background shadow-sm hover:bg-accent",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+        icon: "h-9 w-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "md", ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
     return (
-      <button
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium",
-          "transition-colors duration-150",
-          "focus-visible:outline-none focus-visible:ring-2",
-          "disabled:pointer-events-none disabled:opacity-50",
-          {
-            "bg-brand text-text-inverted hover:bg-brand-hover": variant === "default",
-            "border border-border bg-transparent hover:bg-surface-sunken": variant === "outline",
-            // ... other variants
-          },
-          {
-            "h-8 px-3 text-sm": size === "sm",
-            "h-10 px-4 text-sm": size === "md",
-            "h-12 px-6 text-base": size === "lg",
-          },
-          className
-        )}
         {...props}
       />
     );
@@ -670,25 +692,71 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 ```
 
+### The `asChild` Pattern
+
+Allows polymorphic rendering — the Button can render as any element:
+
+```tsx
+// Renders as <button>
+<Button>Click me</Button>
+
+// Renders as <a> (for Next.js Link)
+<Button asChild>
+  <Link href="/about">About</Link>
+</Button>
+```
+
 ### Usage in Apps
 
 ```tsx
-import { Button, Card, CardHeader, CardTitle, CardContent } from "@repo/ui";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  Badge,
+  ProfileCard,
+} from "@repo/ui";
 
 export default function Page() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Hello</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Button>Click me</Button>
-        <Button variant="outline">Cancel</Button>
-      </CardContent>
-    </Card>
+    <main className="min-h-screen bg-background p-8">
+      <ProfileCard
+        name="Jane Doe"
+        role="Software Engineer"
+        avatarUrl="/avatar.jpg"
+        skills={["React", "TypeScript", "Node.js"]}
+        recentActivity="Shipped new feature"
+        team="Platform"
+        email="jane@example.com"
+      />
+    </main>
   );
 }
 ```
+
+## Adding Components
+
+### Adding a Primitive
+
+1. Create `packages/ui/src/primitives/[name].tsx`
+2. Use `cn()` for class merging
+3. Use CVA for variants
+4. Use `forwardRef` for ref forwarding
+5. Support `asChild` via Radix Slot where appropriate
+6. Export from `packages/ui/src/primitives/index.ts`
+
+### Adding a Block
+
+1. Create `packages/ui/src/blocks/[name].tsx`
+2. Compose from existing primitives
+3. Use **named exports** (not default) for barrel re-export compatibility
+4. Export from `packages/ui/src/blocks/index.ts`
 
 ---
 
@@ -753,203 +821,15 @@ export default function Page() {
 | **pnpm catalog** | Version consistency without hoisting runtime deps |
 | **Hoisted dev tools** | Single update point for tooling |
 | **Tailwind v4 CSS-first** | No config file bloat, theme in CSS |
+| **shadcn-style tokens** | Semantic naming, light/dark mode support |
+| **CVA for variants** | Type-safe, composable variant definitions |
+| **Radix primitives** | Accessible, unstyled base components |
+| **Primitives + Blocks** | Layered architecture for composition |
 | **TypeScript config inheritance** | DRY, framework-specific settings isolated |
 | **ESLint flat config** | Modern, composable, future-proof |
 | **Path aliases** | Clean imports, IDE support |
 | **`transpilePackages`** | Next.js compiles workspace TypeScript |
-
----
-
-# Potential Next Steps
-
-Things not included but easy to add:
-
-## 1. Pre-Built UI Package (tsup)
-
-Add `tsup` to build `packages/ui` to `dist/`:
-
-```bash
-pnpm add -D tsup --filter @repo/ui
-```
-
-```ts
-// packages/ui/tsup.config.ts
-import { defineConfig } from "tsup";
-
-export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["esm"],
-  dts: true,
-  splitting: true,
-  treeshake: true,
-  sourcemap: true,
-  clean: true,
-  external: ["react", "react-dom"],
-});
-```
-
-Update exports to point to `dist/`:
-
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./styles.css": "./dist/styles.css"
-  }
-}
-```
-
-**When to do this:**
-- Publishing to npm
-- Sharing outside monorepo
-- Build performance issues
-- Need semantic versioning
-
-## 2. Component Preview App
-
-Add a Vite dev server inside `packages/ui`:
-
-```
-packages/ui/
-├── src/
-├── preview/
-│   ├── index.html
-│   └── main.tsx
-└── vite.config.ts
-```
-
-```ts
-// packages/ui/vite.config.ts
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  root: "preview",
-  build: {
-    outDir: "../preview-dist",
-  },
-});
-```
-
-**When to do this:**
-- Design system documentation
-- Component showcase
-- Visual testing
-- Stakeholder review
-
-## 3. Radix UI Primitives
-
-Add accessible primitives:
-
-```bash
-pnpm add @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-tooltip --filter @repo/ui
-```
-
-Update `tsup.config.ts` to externalize:
-
-```ts
-external: ["react", "react-dom", /^@radix-ui\/.*/],
-```
-
-**When to do this:**
-- Need modals, dropdowns, tooltips
-- Accessibility requirements
-- Complex interactive components
-
-## 4. Testing (Vitest)
-
-Add unit tests:
-
-```bash
-pnpm add -D vitest @testing-library/react @testing-library/jest-dom jsdom --filter @repo/ui
-```
-
-```ts
-// packages/ui/vitest.config.ts
-import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: "jsdom",
-    setupFiles: ["./src/test/setup.ts"],
-  },
-});
-```
-
-**When to do this:**
-- Component library grows
-- CI/CD pipeline needed
-- Regression prevention
-
-## 5. Storybook
-
-Add component documentation:
-
-```bash
-cd packages/ui
-pnpm dlx storybook@latest init
-```
-
-**When to do this:**
-- Team collaboration
-- Design handoff
-- Component documentation
-- Visual regression testing
-
-## 6. Changesets
-
-Add versioning and changelogs:
-
-```bash
-pnpm add -D @changesets/cli -w
-pnpm changeset init
-```
-
-**When to do this:**
-- Publishing packages
-- Tracking breaking changes
-- Automated releases
-- Multiple consumers
-
-## 7. GitHub Actions CI
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-      - run: pnpm install
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm build
-```
-
-**When to do this:**
-- Team collaboration
-- Automated quality checks
-- Deploy previews
+| **Named exports** | Required for barrel re-exports (`export *`) |
 
 ---
 
@@ -985,10 +865,19 @@ monorepo/
 │       └── src/
 │           ├── index.ts
 │           ├── styles.css
-│           ├── lib/utils.ts
-│           └── components/
-│               ├── button.tsx
-│               └── card.tsx
+│           ├── lib/
+│           │   └── utils.ts
+│           ├── primitives/
+│           │   ├── index.ts
+│           │   ├── avatar.tsx
+│           │   ├── badge.tsx
+│           │   ├── button.tsx
+│           │   ├── card.tsx
+│           │   ├── input.tsx
+│           │   └── label.tsx
+│           └── blocks/
+│               ├── index.ts
+│               └── profile-card.tsx
 │
 └── apps/
     ├── web/
