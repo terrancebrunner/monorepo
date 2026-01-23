@@ -6,7 +6,7 @@ import { Avatar,
   Card, 
   CardContent, 
   CardFooter, 
-  CardHeader  } from "../primitives"
+  CardHeader  } from "../components/ui"
 import { Code, GitBranch, Mail, Users } from 'lucide-react'
 
 interface ProfileCardProps {
