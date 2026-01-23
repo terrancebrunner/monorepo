@@ -18,7 +18,9 @@
     "lucide-react": "catalog:",                                                                                                                                                           
     "@radix-ui/react-avatar": "catalog:",                                                                                                                                                 
     "@radix-ui/react-label": "catalog:",                                                                                                                                                  
-    "@radix-ui/react-slot": "catalog:"        
+    "@radix-ui/react-slot": "catalog:",
+    "motion": "catalog:",
+    "recharts": "catalog:"              
   },
   "peerDependencies": {
     "react": "catalog:",

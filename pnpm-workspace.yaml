@@ -43,3 +43,7 @@ catalog:
   "@radix-ui/react-avatar": "^1.1.0"                                                                                                                                                      
   "@radix-ui/react-label": "^2.1.0"                                                                                                                                                       
   "@radix-ui/react-slot": "^1.1.0"
+
+  # Features
+  "motion": "^12.23.0"
+  "recharts": "^2.15.0"
