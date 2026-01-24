@@ -1,9 +1,3 @@
-import { Innovation } from "@repo/ui";
+import { DesignSystem } from "@repo/ui";
 
-export default function App() {
-  return (
-    <>
-      <Innovation />
-    </>
-  );
-}
+export default function App() { return <DesignSystem />; }

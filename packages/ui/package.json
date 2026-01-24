@@ -16,11 +16,15 @@
     "tailwind-merge": "catalog:",
     "class-variance-authority": "catalog:",                                                                                                                                               
     "lucide-react": "catalog:",                                                                                                                                                           
-    "@radix-ui/react-avatar": "catalog:",                                                                                                                                                 
-    "@radix-ui/react-label": "catalog:",                                                                                                                                                  
-    "@radix-ui/react-slot": "catalog:",
+    "@radix-ui/react-avatar": "catalog:",                                                                                                                                                  
+    "@radix-ui/react-label": "catalog:",                                                                                                                                                     
+    "@radix-ui/react-separator": "catalog:",  
+    "@radix-ui/react-slot": "catalog:",  
+    "@radix-ui/react-switch": "catalog:",  
+    "@radix-ui/react-tabs": "catalog:",  
     "motion": "catalog:",
-    "recharts": "catalog:"              
+    "recharts": "catalog:",
+    "react-hook-form": "catalog:"           
   },
   "peerDependencies": {
     "react": "catalog:",

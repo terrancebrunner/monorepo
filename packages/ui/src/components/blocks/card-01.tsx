@@ -1,12 +1,13 @@
-import { Avatar, 
+import { 
+  Avatar, 
   AvatarFallback, 
-  AvatarImage, 
-  Badge, 
-  Button, 
-  Card, 
+  AvatarImage } from "./ui/avatar"
+import { Badge } from "./ui/badge"
+import { Button } from "./ui/button" 
+import { Card,
   CardContent, 
   CardFooter, 
-  CardHeader  } from "../components/ui"
+  CardHeader } from "./ui/card"
 import { Code, GitBranch, Mail, Users } from 'lucide-react'
 
 interface ProfileCardProps {
