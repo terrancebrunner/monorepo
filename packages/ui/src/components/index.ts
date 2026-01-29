@@ -5,6 +5,14 @@ export * from "./ds-demo-tokens"
 export * from "./ds-demo-palettes"
 
 // Innovations
+export * from "./gmh-innovations-00"
+export * from "./gmh-innovations-card"
+export * from "./gmh-innovations-hero"
+export * from "./gmh-innovations-section"
+export * from "./gmh-innovations-svg"
+
+
+// Innovation
 export * from "./gmh-innovation-00";
 export * from "./gmh-innovation-getit";
 export * from "./gmh-innovation-header";
