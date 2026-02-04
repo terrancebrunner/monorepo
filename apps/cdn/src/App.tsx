@@ -1,3 +1,3 @@
-import { DesignSystem } from "@repo/ui";
+import { Innovation } from "@repo/ui";
 
-export default function App() { return <DesignSystem />; }
+export default function App() { return <Innovation />; }

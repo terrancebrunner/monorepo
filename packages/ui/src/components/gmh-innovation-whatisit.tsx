@@ -1,4 +1,12 @@
-import { Card } from "./ui";
+"use client";
+
+import {
+  Card,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "./ui";
 
 export function WhatIsItSection() {
   return (
@@ -17,17 +25,32 @@ export function WhatIsItSection() {
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris.
             </p>
-            <div className="space-y-3">
-              <div className="bg-white/10 p-3 rounded">
-                <p className="text-sm text-white">• Capability lorem</p>
-              </div>
-              <div className="bg-white/10 p-3 rounded">
-                <p className="text-sm text-white">• Capability ipsum</p>
-              </div>
-              <div className="bg-white/10 p-3 rounded">
-                <p className="text-sm text-white">• Capability dolor</p>
-              </div>
-            </div>
+            <Accordion type="single" collapsible className="space-y-3">
+              <AccordionItem value="capability-1" className="bg-white/10 rounded border-none">
+                <AccordionTrigger className="px-3 py-3 text-sm text-white hover:no-underline [&>svg]:text-white">
+                  Capability lorem
+                </AccordionTrigger>
+                <AccordionContent className="px-3 text-white/80">
+                  Details about capability lorem go here.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="capability-2" className="bg-white/10 rounded border-none">
+                <AccordionTrigger className="px-3 py-3 text-sm text-white hover:no-underline [&>svg]:text-white">
+                  Capability ipsum
+                </AccordionTrigger>
+                <AccordionContent className="px-3 text-white/80">
+                  Details about capability ipsum go here.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="capability-3" className="bg-white/10 rounded border-none">
+                <AccordionTrigger className="px-3 py-3 text-sm text-white hover:no-underline [&>svg]:text-white">
+                  Capability dolor
+                </AccordionTrigger>
+                <AccordionContent className="px-3 text-white/80">
+                  Details about capability dolor go here.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             <div className="mt-6 bg-[#AA9868] text-white p-4 rounded inline-block">
               <p className="text-sm">Special feature highlight</p>
             </div>
